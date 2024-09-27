@@ -1,6 +1,6 @@
-import numpy as np
 from itertools import combinations
 
+import numpy as np
 
 
 def pad_image(kernel_size, grayscale_image):

@@ -1,9 +1,9 @@
-
-from Clustering_utils import * 
-
+from utils.clustering_utils import *
 
 
-def apply_region_growing(rg_input_grayscale, rg_input, rg_window_size, rg_seeds, rg_threshold):
+def apply_region_growing(
+    rg_input_grayscale, rg_input, rg_window_size, rg_seeds, rg_threshold
+):
     # Initialize visited mask and segmented image
     # 'visited' is initialized to keep track of which pixels have been visited (Mask)
     visited = np.zeros_like(rg_input_grayscale, dtype=bool)
@@ -47,10 +47,7 @@ def apply_region_growing(rg_input_grayscale, rg_input, rg_window_size, rg_seeds,
                 visited[x, y] = True
 
                 # Check similarity with region mean
-                if (
-                    abs(rg_input_grayscale[x, y] - region_mean)
-                    <= rg_threshold
-                ):
+                if abs(rg_input_grayscale[x, y] - region_mean) <= rg_threshold:
                     # Add pixel to region
                     segmented[x, y] = rg_input[x, y]
 
@@ -61,8 +58,7 @@ def apply_region_growing(rg_input_grayscale, rg_input, rg_window_size, rg_seeds,
                         segmented != 0
                     )  # Number of pixels in the region
                     region_mean = (
-                        region_mean * number_of_region_pixels
-                        + rg_input_grayscale[x, y]
+                        region_mean * number_of_region_pixels + rg_input_grayscale[x, y]
                     ) / (number_of_region_pixels + 1)
 
                     # Add neighbors to queue
@@ -78,111 +74,108 @@ def apply_region_growing(rg_input_grayscale, rg_input, rg_window_size, rg_seeds,
 
 
 def kmeans_segmentation(
-        image,
-        n_clusters,
-        max_iterations,
-        spatial_segmentation,
-        spatial_segmentation_weight,
-        centroid_optimization = False,
-        centroids_color=None,
-        centroids_spatial=None):
+    image,
+    n_clusters,
+    max_iterations,
+    spatial_segmentation,
+    spatial_segmentation_weight,
+    centroid_optimization=False,
+    centroids_color=None,
+    centroids_spatial=None,
+):
 
-        img = np.array(image, copy=True, dtype=float)
+    img = np.array(image, copy=True, dtype=float)
 
+    if spatial_segmentation:
+        h, w, _ = img.shape
+        x_coords, y_coords = np.meshgrid(np.arange(w), np.arange(h))
+        xy_coords = np.column_stack(
+            (x_coords.flatten(), y_coords.flatten())
+        )  # spatial coordinates in the features space
+
+    img_as_features = img.reshape(-1, img.shape[2])  # without spatial info included
+
+    labels = np.zeros(
+        (img_as_features.shape[0], 1)
+    )  # (image size x 1) this array contains the labels of each pixel (belongs to which centroid)
+
+    distance = np.zeros(
+        (img_as_features.shape[0], n_clusters), dtype=float
+    )  # (distance for each colored pixel over the entire clusters)
+
+    # if the centriods have been not provided
+    if centroids_color is None:
+        centroids_indices = np.random.choice(
+            img_as_features.shape[0], n_clusters, replace=False
+        )  # initialize the centroids
+        centroids_color = img_as_features[centroids_indices]  # in terms of color
         if spatial_segmentation:
-            h, w, _ = img.shape
-            x_coords, y_coords = np.meshgrid(np.arange(w), np.arange(h))
-            xy_coords = np.column_stack(
-                (x_coords.flatten(), y_coords.flatten())
-            )  # spatial coordinates in the features space
+            centroids_spatial = xy_coords[
+                centroids_indices
+            ]  # this to introduce restriction in the spatial space of the image
 
-        img_as_features = img.reshape(-1, img.shape[2])  # without spatial info included
+        # Form initial clustering
+        if centroid_optimization:
+            rows = np.arange(img.shape[0])
+            columns = np.arange(img.shape[1])
 
-        labels = np.zeros(
-            (img_as_features.shape[0], 1)
-        )  # (image size x 1) this array contains the labels of each pixel (belongs to which centroid)
+            sample_size = (
+                len(rows) // 16 if len(rows) > len(columns) else len(columns) // 16
+            )
+            ii = np.random.choice(rows, size=sample_size, replace=False)
+            jj = np.random.choice(columns, size=sample_size, replace=False)
+            subimage = img[
+                ii[:, np.newaxis], jj[np.newaxis, :], :
+            ]  # subimage for redistribute the centriods
 
-        distance = np.zeros(
-            (img_as_features.shape[0], n_clusters), dtype=float
-        )  # (distance for each colored pixel over the entire clusters)
-
-        # if the centriods have been not provided
-        if centroids_color is None:
-            centroids_indices = np.random.choice(
-                img_as_features.shape[0], n_clusters, replace=False
-            )  # initialize the centroids
-            centroids_color = img_as_features[centroids_indices]  # in terms of color
             if spatial_segmentation:
-                centroids_spatial = xy_coords[
-                    centroids_indices
-                ]  # this to introduce restriction in the spatial space of the image
-
-            # Form initial clustering
-            if centroid_optimization:
-                rows = np.arange(img.shape[0])
-                columns = np.arange(img.shape[1])
-
-                sample_size = (
-                    len(rows) // 16 if len(rows) > len(columns) else len(columns) // 16
+                centroids_color, centroids_spatial, _ = kmeans_segmentation(
+                    subimage,
+                    max_iterations // 2,
+                    centroids_color=centroids_color,
+                    centroids_spatial=centroids_spatial,
                 )
-                ii = np.random.choice(rows, size=sample_size, replace=False)
-                jj = np.random.choice(columns, size=sample_size, replace=False)
-                subimage = img[
-                    ii[:, np.newaxis], jj[np.newaxis, :], :
-                ]  # subimage for redistribute the centriods
-
-                if spatial_segmentation:
-                    centroids_color, centroids_spatial, _ = kmeans_segmentation(
-                        subimage,
-                        max_iterations // 2,
-                        centroids_color=centroids_color,
-                        centroids_spatial=centroids_spatial,
-                    )
-                else:
-                    centroids_color, _ = kmeans_segmentation(
-                        subimage,
-                        max_iterations // 2,
-                        centroids_color=centroids_color,
-                    )
-
-        for _ in range(max_iterations):
-            for centroid_idx in range(centroids_color.shape[0]):
-                distance[:, centroid_idx] = np.linalg.norm(
-                    img_as_features - centroids_color[centroid_idx], axis=1
+            else:
+                centroids_color, _ = kmeans_segmentation(
+                    subimage,
+                    max_iterations // 2,
+                    centroids_color=centroids_color,
                 )
 
+    for _ in range(max_iterations):
+        for centroid_idx in range(centroids_color.shape[0]):
+            distance[:, centroid_idx] = np.linalg.norm(
+                img_as_features - centroids_color[centroid_idx], axis=1
+            )
+
+            if spatial_segmentation:
+                distance[:, centroid_idx] += (
+                    np.linalg.norm(xy_coords - centroids_spatial[centroid_idx], axis=1)
+                    * spatial_segmentation_weight
+                )
+
+        labels = np.argmin(
+            distance, axis=1
+        )  # assign each point in the feature space a label according to its distance from each centriod based on (spatial and color distance)
+
+        for centroid_idx in range(centroids_color.shape[0]):
+            cluster_colors = img_as_features[labels == centroid_idx]
+            if len(cluster_colors) > 0:  # Check if cluster is not empty
+                new_centroid_color = np.mean(cluster_colors, axis=0)
+                centroids_color[centroid_idx] = new_centroid_color
+
                 if spatial_segmentation:
-                    distance[:, centroid_idx] += (
-                        np.linalg.norm(
-                            xy_coords - centroids_spatial[centroid_idx], axis=1
-                        ) * spatial_segmentation_weight
-                    )
+                    cluster_spatial = xy_coords[labels == centroid_idx]
+                    new_centroid_spatial = np.mean(cluster_spatial, axis=0)
+                    centroids_spatial[centroid_idx] = new_centroid_spatial
 
-            labels = np.argmin(
-                distance, axis=1
-            )  # assign each point in the feature space a label according to its distance from each centriod based on (spatial and color distance)
-
-            for centroid_idx in range(centroids_color.shape[0]):
-                cluster_colors = img_as_features[labels == centroid_idx]
-                if len(cluster_colors) > 0:  # Check if cluster is not empty
-                    new_centroid_color = np.mean(cluster_colors, axis=0)
-                    centroids_color[centroid_idx] = new_centroid_color
-
-                    if spatial_segmentation:
-                        cluster_spatial = xy_coords[labels == centroid_idx]
-                        new_centroid_spatial = np.mean(cluster_spatial, axis=0)
-                        centroids_spatial[centroid_idx] = new_centroid_spatial
-
-        if spatial_segmentation:
-            return centroids_color, centroids_spatial, labels
-        else:
-            return centroids_color, labels
+    if spatial_segmentation:
+        return centroids_color, centroids_spatial, labels
+    else:
+        return centroids_color, labels
 
 
-
-
-def mean_shift_clusters(
-    image, window_size, threshold, sigma, max_iterations=100):
+def mean_shift_clusters(image, window_size, threshold, sigma, max_iterations=100):
     """
     Perform Mean Shift clustering on an image.
 
@@ -197,9 +190,9 @@ def mean_shift_clusters(
             - 'points': A boolean array indicating the points belonging to the cluster.
             - 'center': The centroid of the cluster.
     """
-    image = (
-        (image - image.min()) * (1 / (image.max() - image.min())) * 255
-    ).astype(np.uint8)
+    image = ((image - image.min()) * (1 / (image.max() - image.min())) * 255).astype(
+        np.uint8
+    )
     img = np.array(image, copy=True, dtype=float)
 
     img_as_features = img.reshape(
@@ -241,10 +234,7 @@ def mean_shift_clusters(
             if np.linalg.norm(new_mean - initial_mean) < threshold:
                 merged = False  # Check merge condition
                 for cluster in clusters:
-                    if (
-                        np.linalg.norm(cluster["center"] - new_mean)
-                        < 0.5 * window_size
-                    ):
+                    if np.linalg.norm(cluster["center"] - new_mean) < 0.5 * window_size:
                         # Merge with existing cluster
                         cluster["points"] = (
                             cluster["points"] + within_window_bool
@@ -255,26 +245,27 @@ def mean_shift_clusters(
 
                 if not merged:
                     # No merge, create new cluster
-                    clusters.append(
-                        {"points": within_window_bool, "center": new_mean}
-                    )
+                    clusters.append({"points": within_window_bool, "center": new_mean})
 
                 visited[within_window] = True
                 break
 
             initial_mean = new_mean
         iteration_number += 1
-        
+
     return clusters
 
 
-
-   
-def fit_agglomerative_clusters(points, agglo_initial_num_of_clusters, agglo_number_of_clusters, distance_calculation_method):
+def fit_agglomerative_clusters(
+    points,
+    agglo_initial_num_of_clusters,
+    agglo_number_of_clusters,
+    distance_calculation_method,
+):
     # initially, assign each point to a distinct cluster
     print("Computing initial clusters ...")
     clusters_list = partition_pixel_into_clusters(
-        points, initial_k= agglo_initial_num_of_clusters
+        points, initial_k=agglo_initial_num_of_clusters
     )
     print("number of initial clusters:", len(clusters_list))
     print("merging clusters ...")
@@ -301,9 +292,7 @@ def fit_agglomerative_clusters(points, agglo_initial_num_of_clusters, agglo_numb
             )
 
         # Remove the two clusters from the clusters list
-        clusters_list = [
-            c for c in clusters_list if c != cluster1 and c != cluster2
-        ]
+        clusters_list = [c for c in clusters_list if c != cluster1 and c != cluster2]
 
         # Merge the two clusters
         merged_cluster = cluster1 + cluster2
@@ -325,4 +314,3 @@ def fit_agglomerative_clusters(points, agglo_initial_num_of_clusters, agglo_numb
         centers[cluster_number] = np.average(cluster, axis=0)
 
     return cluster
-

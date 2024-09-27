@@ -1,6 +1,8 @@
+import random
+
 import numpy as np
 from skimage.transform import rescale, resize
-import random
+
 
 def rgb_to_xyz(rgb):
     """Convert RGB color values to XYZ color values."""
@@ -93,6 +95,7 @@ def get_cluster_number(point, cluster):
     # assuming point belongs to clusters that were computed by fit functions
     return cluster[tuple(point)]
 
+
 def get_cluster_center(point, centers):
     """
     Find center of the cluster that point belongs to
@@ -134,7 +137,6 @@ def euclidean_distance(point1, point2):
             Noting that "point1" and "point2" are lists.
     """
     return np.linalg.norm(np.array(point1) - np.array(point2))
-
 
 
 def max_clusters_distance_between_points(cluster1, cluster2):

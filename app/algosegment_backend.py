@@ -1,4 +1,3 @@
-# backend.py
 import os
 
 import numpy as np
@@ -7,49 +6,22 @@ import numpy as np
 os.environ["QT_API"] = "PyQt5"
 # To solve the problem of the icons with relative path
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
-import time
-from math import cos, sin
 
 import cv2
-import matplotlib.pyplot as plt
 import numpy as np
 
 # in CMD: pip install qdarkstyle -> pip install pyqtdarktheme
 import qdarktheme
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.figure import Figure
-from matplotlib.patches import Circle
+from algosegment_ui import Ui_MainWindow
+from implementation.clustering_algo import *
+from implementation.thresholding_algo import *
 from PyQt5 import QtGui
 
 # imports
-from PyQt5.QtWidgets import (
-    QApplication,
-    QFileDialog,
-    QMainWindow,
-    QMessageBox,
-    QVBoxLayout,
-)
-
-# from task3_ui import Ui_MainWindow
-from UI import Ui_MainWindow
-
-from Thresholding_utils import * 
-from Clustering_utils import * 
-from Clustering_algo import * 
-from Thresholding_algo import * 
-
-# Helper functions
-def convert_to_gray(img_RGB: np.ndarray) -> np.ndarray:
-    if len(img_RGB.shape) == 3:
-        grey = np.dot(img_RGB[..., :3], [0.2989, 0.5870, 0.1140])
-        return grey.astype(np.uint8)
-    else:
-        return img_RGB.astype(np.uint8)
-
-
-def convert_BGR_to_RGB(img_BGR_nd_arr: np.ndarray) -> np.ndarray:
-    img_RGB_nd_arr = img_BGR_nd_arr[..., ::-1]
-    return img_RGB_nd_arr
+from PyQt5.QtWidgets import QApplication, QFileDialog, QMainWindow, QMessageBox
+from utils.clustering_utils import *
+from utils.helper_functions import *
+from utils.thresholding_utils import *
 
 
 class BackendClass(QMainWindow, Ui_MainWindow):
@@ -158,16 +130,15 @@ class BackendClass(QMainWindow, Ui_MainWindow):
 
         ### ==== General ==== ###
         # Connect menu action to load_image
-        self.ui.actionLoad_Image.triggered.connect(self.load_image)
+        self.ui.actionImport_Image.triggered.connect(self.load_image)
 
     def change_the_icon(self):
-        self.setWindowIcon(QtGui.QIcon("Figs/App_Icon.png"))
+        self.setWindowIcon(QtGui.QIcon("assets/app_icon.png"))
         self.setWindowTitle("Computer Vision - Task 03 - Team 02")
 
     def load_image(self):
         # clear self.r and threshold label
         self.ui.threshold_value_label.setText("")
-
 
         # Open file dialog if file_path is not provided
         file_path, _ = QFileDialog.getOpenFileName(
@@ -355,7 +326,7 @@ class BackendClass(QMainWindow, Ui_MainWindow):
                     False,
                 )
 
-       ## ============== Region-Growing Methods ============== ##
+    ## ============== Region-Growing Methods ============== ##
     def rg_canvas_clicked(self, event):
         if event.xdata is not None and event.ydata is not None:
             x = int(event.xdata)
@@ -385,7 +356,13 @@ class BackendClass(QMainWindow, Ui_MainWindow):
         self.rg_window_size = self.ui.window_size_spinbox.value()
 
     def apply_region_growing(self):
-        segmented = apply_region_growing(self.rg_input_grayscale, self.rg_input, self.rg_window_size, self.rg_seeds, self.rg_threshold)
+        segmented = apply_region_growing(
+            self.rg_input_grayscale,
+            self.rg_input,
+            self.rg_window_size,
+            self.rg_seeds,
+            self.rg_threshold,
+        )
         self.display_image(
             segmented,
             self.ui.sift_output_figure_canvas,
@@ -396,8 +373,8 @@ class BackendClass(QMainWindow, Ui_MainWindow):
         )
         self.plot_rg_output(segmented)
 
-
         ## =========== Display the segmented image =========== ##
+
     def plot_rg_output(self, segmented_image):
         # Find contours of segmented region
         contours, _ = cv2.findContours(
@@ -469,11 +446,13 @@ class BackendClass(QMainWindow, Ui_MainWindow):
                     False,
                 )
                 centroids_color, _, labels = kmeans_segmentation(
-                    self.k_means_luv_input,  self.n_clusters,
-                                self.max_iterations,
-                                self.spatial_segmentation,
-                                self.spatial_segmentation_weight,
-                                self.centroid_optimization)
+                    self.k_means_luv_input,
+                    self.n_clusters,
+                    self.max_iterations,
+                    self.spatial_segmentation,
+                    self.spatial_segmentation_weight,
+                    self.centroid_optimization,
+                )
             else:
                 self.display_image(
                     self.k_means_input,
@@ -482,11 +461,13 @@ class BackendClass(QMainWindow, Ui_MainWindow):
                     False,
                 )
                 centroids_color, _, labels = kmeans_segmentation(
-                    self.k_means_input, self.n_clusters,
-                                self.max_iterations,
-                                self.spatial_segmentation,
-                                self.spatial_segmentation_weight,
-                                self.centroid_optimization)
+                    self.k_means_input,
+                    self.n_clusters,
+                    self.max_iterations,
+                    self.spatial_segmentation,
+                    self.spatial_segmentation_weight,
+                    self.centroid_optimization,
+                )
         else:
             if self.k_means_LUV:
                 self.display_image(
@@ -496,11 +477,13 @@ class BackendClass(QMainWindow, Ui_MainWindow):
                     False,
                 )
                 centroids_color, labels = kmeans_segmentation(
-                    self.k_means_luv_input, self.n_clusters,
-                                self.max_iterations,
-                                self.spatial_segmentation,
-                                self.spatial_segmentation_weight,
-                                self.centroid_optimization)
+                    self.k_means_luv_input,
+                    self.n_clusters,
+                    self.max_iterations,
+                    self.spatial_segmentation,
+                    self.spatial_segmentation_weight,
+                    self.centroid_optimization,
+                )
             else:
                 self.display_image(
                     self.k_means_input,
@@ -509,12 +492,14 @@ class BackendClass(QMainWindow, Ui_MainWindow):
                     False,
                 )
                 centroids_color, labels = kmeans_segmentation(
-                    self.k_means_input, self.n_clusters,
-                                self.max_iterations,
-                                self.spatial_segmentation,
-                                self.spatial_segmentation_weight,
-                                self.centroid_optimization)
-        
+                    self.k_means_input,
+                    self.n_clusters,
+                    self.max_iterations,
+                    self.spatial_segmentation,
+                    self.spatial_segmentation_weight,
+                    self.centroid_optimization,
+                )
+
         self.k_means_output = centroids_color[labels]
 
         if self.k_means_LUV:
@@ -541,7 +526,6 @@ class BackendClass(QMainWindow, Ui_MainWindow):
         self.mean_shift_threshold = self.ui.mean_shift_threshold_spinbox.value()
 
         self.mean_shift_luv = self.ui.mean_shift_LUV_conversion.isChecked()
-
 
     def calculate_mean_shift_clusters(self, image):
         clusters = mean_shift_clusters(
@@ -697,7 +681,12 @@ class BackendClass(QMainWindow, Ui_MainWindow):
             agglo_downsampled_image = self.agglo_input_image
         self.get_agglomerative_parameters()
         pixels = agglo_reshape_image(agglo_downsampled_image)
-        self.cluster = fit_agglomerative_clusters(pixels, self.agglo_initial_num_of_clusters, self.agglo_number_of_clusters, self.distance_calculation_method)
+        self.cluster = fit_agglomerative_clusters(
+            pixels,
+            self.agglo_initial_num_of_clusters,
+            self.agglo_number_of_clusters,
+            self.distance_calculation_method,
+        )
 
         self.agglo_output_image = [
             [get_cluster_center(pixel, self.cluster) for pixel in row]
@@ -711,6 +700,7 @@ class BackendClass(QMainWindow, Ui_MainWindow):
             f"Segmented image with k={self.agglo_number_of_clusters}",
             False,
         )
+
 
 if __name__ == "__main__":
     import sys

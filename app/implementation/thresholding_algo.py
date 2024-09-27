@@ -1,6 +1,7 @@
-from Thresholding_utils import * 
+from utils.thresholding_utils import *
 
-def optimal_thresholding( image):
+
+def optimal_thresholding(image):
     """
     Description:
         - Applies optimal thresholding to an image.
@@ -46,9 +47,7 @@ def optimal_thresholding( image):
             )
         if not len(object_pixels[0]) == 0:
             # Compute the new mean of the object class based on the new threshold
-            object_mean = np.sum(optimal_image[object_pixels]) / len(
-                object_pixels[0]
-            )
+            object_mean = np.sum(optimal_image[object_pixels]) / len(object_pixels[0])
     # Set background pixels white
     optimal_image[background_pixels] = 0
     # Set object pixels black
@@ -56,8 +55,7 @@ def optimal_thresholding( image):
     return optimal_image, [[threshold]], threshold
 
 
-
-def local_thresholding( grayscale_image, threshold_algorithm, kernel_size=5):
+def local_thresholding(grayscale_image, threshold_algorithm, kernel_size=5):
     """
     Description:
         - Applies local thresholding to an image.
@@ -73,9 +71,7 @@ def local_thresholding( grayscale_image, threshold_algorithm, kernel_size=5):
     # Pad the image to avoid lossing information of the boundry pixels or getting out of bounds
     padded_image = pad_image(kernel_size, grayscale_image)
     thresholded_image = np.zeros_like(grayscale_image)
-    for i in range(
-        0, grayscale_image.shape[0] - (kernel_size // 2), kernel_size // 2
-    ):
+    for i in range(0, grayscale_image.shape[0] - (kernel_size // 2), kernel_size // 2):
         for j in range(
             0, grayscale_image.shape[1] - (kernel_size // 2), kernel_size // 2
         ):
@@ -94,13 +90,9 @@ def local_thresholding( grayscale_image, threshold_algorithm, kernel_size=5):
                 thresholded_window, _, _ = threshold_algorithm(window)
                 thresholded_image[
                     i : i + (kernel_size // 2), j : j + (kernel_size // 2)
-                ] = thresholded_window[
-                    (kernel_size // 2) : -1, (kernel_size // 2) : -1
-                ]
+                ] = thresholded_window[(kernel_size // 2) : -1, (kernel_size // 2) : -1]
 
     return thresholded_image
-
-
 
 
 def multi_otsu(self, image, number_of_thresholds, step):
@@ -128,9 +120,7 @@ def multi_otsu(self, image, number_of_thresholds, step):
     )
     # Calculate the global mean to calculate the global variance to evaluate the seperation process
     global_mean = np.sum(np.arange(len(pi_dist)) * pi_dist)
-    global_variance = np.sum(
-        ((np.arange(len(pi_dist)) - global_mean) ** 2) * pi_dist
-    )
+    global_variance = np.sum(((np.arange(len(pi_dist)) - global_mean) ** 2) * pi_dist)
     # Array to store the thresholds at which the between_class_variance has a maximum value
     threshold_values = []
     # Initialize to None
