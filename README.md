@@ -1,6 +1,6 @@
 # exVision: AlgoSegment
 ## Overview 
- AlgoSegment is a desktop application designed to offer a variety of classical image segmentation techniques. It provides users with the ability to apply advanced algorithms to divide images into meaningful regions based on pixel intensity, color, and spatial features. The app supports both clustering-based segmentation for colored images and thresholding-based segmentation for grayscale images. 
+ AlgoSegment is a desktop application designed to offer a variety of classical image segmentation techniques. It provides users with the ability to apply advanced algorithms to divide images into meaningful regions based on pixel intensity, color, and spatial features. The app supports both clustering-based segmentation for colored images and thresholding-based segmentation for grayscale images. The application is implemented using PyQt5 for the desktop interface, providing an intuitive environment for real-time usage. You can refer to the [attached report (insert cross-reference)]("") to get a rough sense of the parameters associated with each algorithm.
 
 ## Segmentation Techniques
 
