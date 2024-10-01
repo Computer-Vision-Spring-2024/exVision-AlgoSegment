@@ -12,9 +12,9 @@
 
 
 <p align="center">
-  <img src="README-Assets\optimal_image.png" alt="input/output" width="300"/>
+  <img src="README-Assets\optimal_image.png" alt="input/output" width="450"/>
   <br>
-  <img src="README-Assets\optimal_hist.png" alt="intensity histogram" width="300"/>
+  <img src="README-Assets\optimal_hist.png" alt="intensity histogram" width="450"/>
 </p>
 
 ### Otsu's Thresholding (Binary and Multi Modal)
@@ -23,9 +23,9 @@
 -  In cases where the histogram has multiple peaks (multi-modal), Otsu can extend to find multiple thresholds to segment the image into more than two classes.
 
 <p align="center">
-  <img src="README-Assets\Otsu_image.png" alt="input/output" width="300"/>
+  <img src="README-Assets\Otsu_image.png" alt="input/output" width="450"/>
   <br>
-  <img src="README-Assets\Otsu_hist.png" alt="intensity histogram for multi-modal threshodling" width="300"/>
+  <img src="README-Assets\Otsu_hist.png" alt="intensity histogram for multi-modal threshodling" width="450"/>
 </p>
 
 ### K-Means Clustering
@@ -36,9 +36,9 @@
 - In addition, you have the option to enforce **spatial segmentation** to make sure that there is spatial consistency in the segemented image.
 
 <p align="center">
-  <img src="README-Assets\k-means_color_space.png" alt="input/output with only color space segmentation" width="300"/>
+  <img src="README-Assets\k-means_color_space.png" alt="input/output with only color space segmentation" width="450"/>
   <br>
-  <img src="README-Assets\k_means_spatial_space.png" alt="input/output with spatial constraints" width="300"/>
+  <img src="README-Assets\k_means_spatial_space.png" alt="input/output with spatial constraints" width="450"/>
 </p>
 
 
@@ -49,7 +49,7 @@
 
 
 <p align="center">
-  <img src="README-Assets\mean_shift.png" alt="input/output mean shift clustering" width="300"/>
+  <img src="README-Assets\mean_shift.png" alt="input/output mean shift clustering" width="450"/>
 </p> 
 
 
@@ -59,7 +59,7 @@
 - Useful for segmenting objects based on predefined criteria and allows for more control over the segmentation process.
 
 <p align="center">
-  <img src="README-Assets\Region_growing.png" alt="input/output mean shift clustering" width="300"/>
+  <img src="README-Assets\Region_growing.png" alt="input/output mean shift clustering" width="500"/>
 </p> 
 
 
@@ -69,9 +69,7 @@
 - Effective for creating a hierarchy of clusters and visualizing relationships. 
 
 <p align="center">
-  <img src="README-Assets\Agglomerative.png" alt="input/output mean shift clustering" width="300"/>
-  <br>
-  <img src="README-Assets\agglomerative_demo.png" alt="input/output with spatial constraints" width="200"/>
+  <img src="README-Assets\Agglomerative.png" alt="input/output mean shift clustering" width="500"/>
 </p> 
 
 **For a more in-depth understanding of each algorithm, please refer to the attached notebooks as well as the report.**
