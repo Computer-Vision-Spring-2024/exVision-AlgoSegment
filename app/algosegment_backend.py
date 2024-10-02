@@ -12,7 +12,7 @@ import numpy as np
 
 # in CMD: pip install qdarkstyle -> pip install pyqtdarktheme
 import qdarktheme
-from algosegment_ui import Ui_MainWindow
+from AlgoSegment_UI import Ui_MainWindow
 from implementation.clustering_algo import *
 from implementation.thresholding_algo import *
 from PyQt5 import QtGui
@@ -131,6 +131,9 @@ class BackendClass(QMainWindow, Ui_MainWindow):
         ### ==== General ==== ###
         # Connect menu action to load_image
         self.ui.actionImport_Image.triggered.connect(self.load_image)
+
+        # change the app icon and title
+        self.change_the_icon()
 
     def change_the_icon(self):
         self.setWindowIcon(QtGui.QIcon("assets/app_icon.png"))

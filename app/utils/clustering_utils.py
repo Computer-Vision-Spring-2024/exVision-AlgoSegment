@@ -1,7 +1,7 @@
 import random
 
 import numpy as np
-from skimage.transform import rescale, resize
+from skimage.transform import resize
 
 
 def rgb_to_xyz(rgb):

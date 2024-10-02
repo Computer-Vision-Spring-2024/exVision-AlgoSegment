@@ -1,6 +1,6 @@
 # exVision: AlgoSegment
 ## Overview 
- AlgoSegment is a desktop application designed to offer a variety of classical image segmentation techniques. It provides users with the ability to apply advanced algorithms to divide images into meaningful regions based on pixel intensity, color, and spatial features. The app supports both clustering-based segmentation for colored images and thresholding-based segmentation for grayscale images. The application is implemented using PyQt5 for the desktop interface, providing an intuitive environment for real-time usage. You can refer to the [attached report (insert cross-reference)]("") to get a rough sense of the parameters associated with each algorithm.
+ AlgoSegment is a desktop application designed to offer a variety of classical image segmentation techniques. It provides users with the ability to apply advanced algorithms to divide images into meaningful regions based on pixel intensity, color, and spatial features. The app supports both clustering-based segmentation for colored images and thresholding-based segmentation for grayscale images. The application is implemented using PyQt5 for the desktop interface, providing an intuitive environment for real-time usage. You can refer to [the project documentation]("README-Assets/AlgoSegment_documentation.pdf") to get a rough sense of the parameters associated with each algorithm.
 
 ## Segmentation Techniques
 
@@ -47,7 +47,6 @@
 - By iteratively shifting each data point towards the mean of the points in its neighborhood, effectively locating the peaks of the density function.
 - Effective for images with arbitrary-shaped clusters and varying densities. 
 
-
 <p align="center">
   <img src="README-Assets\mean_shift.png" alt="input/output mean shift clustering" width="450"/>
 </p> 
@@ -72,8 +71,21 @@
   <img src="README-Assets\Agglomerative.png" alt="input/output mean shift clustering" width="500"/>
 </p> 
 
+> **Disclaimer**  
+> We did not implement the agglomerative clustering algorithm ourselves. Instead, we used the implementation provided in the following repository: [Image-Clustering by Alianoroozi](https://github.com/alianoroozi/Image-Clustering).  
+> Our contribution was adding an optional and initial downsampling step before the algorithm begins, to enhance performance in certain use cases.
+
 **For a more in-depth understanding of each algorithm, please refer to the attached notebooks as well as the report.**
 
+## Getting Started
+
+To be able to use our app, you can simply follow these steps:
+1. Install Python3 on your device. You can download it from <a href="https://www.python.org/downloads/">Here</a>.
+2. Install the required packages by the following command.
+```
+pip install -r requirements.txt
+```
+3. Run the file with the name "AlgoSegment_Backend.py" in the [app folder](app).
 
 ## Acknowledgments
 
