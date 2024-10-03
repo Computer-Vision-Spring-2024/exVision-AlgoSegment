@@ -16,11 +16,11 @@ from PyQt5 import QtGui
 from PyQt5.QtWidgets import QApplication, QFileDialog, QMainWindow, QMessageBox
 
 from algosegment_ui import AlgoSegment_Ui
-from implementation.clustering_algo import *
-from implementation.thresholding_algo import *
-from utils.clustering_utils import *
-from utils.helper_functions import *
-from utils.thresholding_utils import *
+from clustering_algo import *
+from thresholding_algo import *
+from clustering_utils import *
+from helper_functions import *
+from thresholding_utils import *
 
 
 class BackendClass(QMainWindow, AlgoSegment_Ui):
@@ -550,7 +550,7 @@ class BackendClass(QMainWindow, AlgoSegment_Ui):
             agglo_downsampled_image = self.agglo_input_image
         self.get_agglomerative_parameters()
         pixels = agglo_reshape_image(agglo_downsampled_image)
-        self.cluster = fit_agglomerative_clusters(
+        self.cluster, self.centers = fit_agglomerative_clusters(
             pixels,
             self.agglo_initial_num_of_clusters,
             self.agglo_number_of_clusters,
@@ -558,7 +558,7 @@ class BackendClass(QMainWindow, AlgoSegment_Ui):
         )
 
         self.agglo_output_image = [
-            [get_cluster_center(pixel, self.cluster) for pixel in row]
+            [get_cluster_center(pixel, self.cluster, self.centers) for pixel in row]
             for row in agglo_downsampled_image
         ]
         self.agglo_output_image = np.array(self.agglo_output_image, np.uint8)
