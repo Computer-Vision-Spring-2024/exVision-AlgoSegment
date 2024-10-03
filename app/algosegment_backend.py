@@ -15,7 +15,7 @@ import qdarktheme
 from PyQt5 import QtGui
 from PyQt5.QtWidgets import QApplication, QFileDialog, QMainWindow, QMessageBox
 
-from AlgoSegment_UI import AlgoSegment_Ui
+from algosegment_ui import AlgoSegment_Ui
 from implementation.clustering_algo import *
 from implementation.thresholding_algo import *
 from utils.clustering_utils import *

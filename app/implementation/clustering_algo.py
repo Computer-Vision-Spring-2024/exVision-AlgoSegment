@@ -129,18 +129,10 @@ def kmeans_segmentation(
             ]  # subimage for redistribute the centriods
 
             if spatial_segmentation:
-                centroids_color, centroids_spatial, _ = kmeans_segmentation(
-                    subimage,
-                    max_iterations // 2,
-                    centroids_color=centroids_color,
-                    centroids_spatial=centroids_spatial,
-                )
+                centroids_color, centroids_spatial, _ = kmeans_segmentation(subimage, n_clusters, max_iterations//2, spatial_segmentation, spatial_segmentation_weight,centroids_color=centroids_color, 
+                                    centroids_spatial=centroids_spatial)
             else:
-                centroids_color, _ = kmeans_segmentation(
-                    subimage,
-                    max_iterations // 2,
-                    centroids_color=centroids_color,
-                )
+                centroids_color, _ = kmeans_segmentation(subimage, n_clusters, max_iterations//2, spatial_segmentation, spatial_segmentation_weight, centroids_color=centroids_color)
 
     for _ in range(max_iterations):
         for centroid_idx in range(centroids_color.shape[0]):
