@@ -16,8 +16,6 @@ from AlgoSegment_UI import Ui_MainWindow
 from implementation.clustering_algo import *
 from implementation.thresholding_algo import *
 from PyQt5 import QtGui
-
-# imports
 from PyQt5.QtWidgets import QApplication, QFileDialog, QMainWindow, QMessageBox
 from utils.clustering_utils import *
 from utils.helper_functions import *
@@ -137,12 +135,9 @@ class BackendClass(QMainWindow, Ui_MainWindow):
 
     def change_the_icon(self):
         self.setWindowIcon(QtGui.QIcon("assets/app_icon.png"))
-        self.setWindowTitle("Computer Vision - Task 03 - Team 02")
+        self.setWindowTitle("exVision - AlgoSegment")
 
     def load_image(self):
-        # clear self.r and threshold label
-        self.ui.threshold_value_label.setText("")
-
         # Open file dialog if file_path is not provided
         file_path, _ = QFileDialog.getOpenFileName(
             self,
@@ -237,13 +232,6 @@ class BackendClass(QMainWindow, Ui_MainWindow):
                 )
                 self.ui.apply_thresholding.setEnabled(True)
 
-            # Deactivate the slider and disconnect from apply harris function
-            self.ui.horizontalSlider_corner_tab.setEnabled(False)
-            try:
-                self.ui.horizontalSlider_corner_tab.valueChanged.disconnect()
-            except TypeError:
-                pass
-
     def display_image(
         self, image, canvas, title, grey, hist_or_not=False, axis_disabled="off"
     ):
@@ -287,48 +275,6 @@ class BackendClass(QMainWindow, Ui_MainWindow):
         canvas.figure.subplots_adjust(left=0.1, right=0.90, bottom=0.08, top=0.95)
         canvas.draw()
 
-    # @staticmethod
-    def display_selection_dialog(self, image):
-        """
-        Description:
-            - Shows a message dialog box to determine whether this is the a template or the target image in SIFT
-
-        Args:
-            - image: The image to be displayed.
-        """
-        msgBox = QMessageBox()
-        msgBox.setIcon(QMessageBox.Question)
-        msgBox.setText("Select an Image")
-        msgBox.setWindowTitle("Image Selection")
-        msgBox.setMinimumWidth(150)
-
-        # Set custom button text
-        msgBox.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
-        msgBox.button(QMessageBox.Yes).setText("Target Image")
-        msgBox.button(QMessageBox.No).setText("Template")
-
-        # Executing the message box
-        response = msgBox.exec()
-        if response == QMessageBox.Rejected:
-            return
-        else:
-            if response == QMessageBox.Yes:
-                self.sift_target_image = image
-                self.display_image(
-                    image,
-                    self.ui.input_1_figure_canvas,
-                    "Target Image",
-                    False,
-                )
-            elif response == QMessageBox.No:
-                self.sift_template_image = image
-                self.display_image(
-                    image,
-                    self.ui.input_2_figure_canvas,
-                    "Template Image",
-                    False,
-                )
-
     ## ============== Region-Growing Methods ============== ##
     def rg_canvas_clicked(self, event):
         if event.xdata is not None and event.ydata is not None:
@@ -368,8 +314,8 @@ class BackendClass(QMainWindow, Ui_MainWindow):
         )
         self.display_image(
             segmented,
-            self.ui.sift_output_figure_canvas,
-            "SIFT Output",
+            self.ui.region_growing_output_figure_canvas,
+            "Region Growing Output",
             False,
             False,
             "off",
@@ -579,6 +525,48 @@ class BackendClass(QMainWindow, Ui_MainWindow):
             False,
         )
 
+    ## ============== Agglomerative Clustering ============== ##
+    def get_agglomerative_parameters(self):
+        self.downsampling = self.ui.downsampling.isChecked()
+        self.agglo_number_of_clusters = self.ui.agglo_num_of_clusters_spinBox.value()
+        self.agglo_scale_factor = self.ui.agglo_scale_factor.value()
+        self.agglo_initial_num_of_clusters = (
+            self.ui.initial_num_of_clusters_spinBox.value()
+        )
+        self.ui.initial_num_of_clusters_label.setText(
+            "Initial Number of Clusters: " + str(self.agglo_initial_num_of_clusters)
+        )
+        self.distance_calculation_method = (
+            self.ui.distance_calculation_method_combobox.currentText()
+        )
+
+    def apply_agglomerative_clustering(self):
+        if self.downsampling:
+            agglo_downsampled_image = downsample_image()
+        else:
+            agglo_downsampled_image = self.agglo_input_image
+        self.get_agglomerative_parameters()
+        pixels = agglo_reshape_image(agglo_downsampled_image)
+        self.cluster = fit_agglomerative_clusters(
+            pixels,
+            self.agglo_initial_num_of_clusters,
+            self.agglo_number_of_clusters,
+            self.distance_calculation_method,
+        )
+
+        self.agglo_output_image = [
+            [get_cluster_center(pixel, self.cluster) for pixel in row]
+            for row in agglo_downsampled_image
+        ]
+        self.agglo_output_image = np.array(self.agglo_output_image, np.uint8)
+
+        self.display_image(
+            self.agglo_output_image,
+            self.ui.agglomerative_output_figure_canvas,
+            f"Segmented image with k={self.agglo_number_of_clusters}",
+            False,
+        )
+
     ## ============== Thresholding Methods ============== ##
     def get_thresholding_parameters(self):
         self.number_of_thresholds = self.ui.number_of_thresholds_slider.value()
@@ -660,48 +648,6 @@ class BackendClass(QMainWindow, Ui_MainWindow):
             self.ui.thresholding_output_figure_canvas,
             "Thresholding Output",
             True,
-        )
-
-    ## ============== Agglomerative Clustering ============== ##
-    def get_agglomerative_parameters(self):
-        self.downsampling = self.ui.downsampling.isChecked()
-        self.agglo_number_of_clusters = self.ui.agglo_num_of_clusters_spinBox.value()
-        self.agglo_scale_factor = self.ui.agglo_scale_factor.value()
-        self.agglo_initial_num_of_clusters = (
-            self.ui.initial_num_of_clusters_spinBox.value()
-        )
-        self.ui.initial_num_of_clusters_label.setText(
-            "Initial Number of Clusters: " + str(self.agglo_initial_num_of_clusters)
-        )
-        self.distance_calculation_method = (
-            self.ui.distance_calculation_method_combobox.currentText()
-        )
-
-    def apply_agglomerative_clustering(self):
-        if self.downsampling:
-            agglo_downsampled_image = downsample_image()
-        else:
-            agglo_downsampled_image = self.agglo_input_image
-        self.get_agglomerative_parameters()
-        pixels = agglo_reshape_image(agglo_downsampled_image)
-        self.cluster = fit_agglomerative_clusters(
-            pixels,
-            self.agglo_initial_num_of_clusters,
-            self.agglo_number_of_clusters,
-            self.distance_calculation_method,
-        )
-
-        self.agglo_output_image = [
-            [get_cluster_center(pixel, self.cluster) for pixel in row]
-            for row in agglo_downsampled_image
-        ]
-        self.agglo_output_image = np.array(self.agglo_output_image, np.uint8)
-
-        self.display_image(
-            self.agglo_output_image,
-            self.ui.agglomerative_output_figure_canvas,
-            f"Segmented image with k={self.agglo_number_of_clusters}",
-            False,
         )
 
 
