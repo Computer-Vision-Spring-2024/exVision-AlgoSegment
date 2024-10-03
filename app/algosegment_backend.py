@@ -12,20 +12,21 @@ import numpy as np
 
 # in CMD: pip install qdarkstyle -> pip install pyqtdarktheme
 import qdarktheme
-from AlgoSegment_UI import Ui_MainWindow
-from implementation.clustering_algo import *
-from implementation.thresholding_algo import *
 from PyQt5 import QtGui
 from PyQt5.QtWidgets import QApplication, QFileDialog, QMainWindow, QMessageBox
+
+from AlgoSegment_UI import AlgoSegment_Ui
+from implementation.clustering_algo import *
+from implementation.thresholding_algo import *
 from utils.clustering_utils import *
 from utils.helper_functions import *
 from utils.thresholding_utils import *
 
 
-class BackendClass(QMainWindow, Ui_MainWindow):
+class BackendClass(QMainWindow, AlgoSegment_Ui):
     def __init__(self):
         super().__init__()
-        self.ui = Ui_MainWindow()
+        self.ui = AlgoSegment_Ui()
         self.ui.setupUi(self)
 
         ### ==== Region-Growing ==== ###
@@ -135,7 +136,7 @@ class BackendClass(QMainWindow, Ui_MainWindow):
 
     def change_the_icon(self):
         self.setWindowIcon(QtGui.QIcon("assets/app_icon.png"))
-        self.setWindowTitle("exVision - AlgoSegment")
+        self.setWindowTitle("exVision-AlgoSegment")
 
     def load_image(self):
         # Open file dialog if file_path is not provided

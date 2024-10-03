@@ -5,9 +5,9 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
-class Ui_MainWindow(object):
+class AlgoSegment_Ui(object):
     def setupUi(self, AgloSegment):
-        AgloSegment.setObjectName("MainWindow")
+        AgloSegment.setObjectName("AlgoSegment")
         AgloSegment.resize(1101, 732)
         font = QtGui.QFont()
         font.setFamily("Montserrat")
@@ -177,7 +177,7 @@ class Ui_MainWindow(object):
         ## End of Thresholding
 
         self.retranslateUi(AgloSegment)
-        self.tabWidget.setCurrentIndex(3)
+        self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(AgloSegment)
 
     def setup_mean_shift_tab(self):
@@ -748,7 +748,7 @@ if __name__ == "__main__":
 
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
-    ui = Ui_MainWindow()
+    ui = AlgoSegment_Ui()
     ui.setupUi(MainWindow)
     MainWindow.show()
     sys.exit(app.exec_())
