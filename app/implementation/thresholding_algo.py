@@ -97,7 +97,7 @@ def local_thresholding(grayscale_image, threshold_algorithm, kernel_size=5):
     return thresholded_image
 
 
-def multi_otsu(self, image, number_of_thresholds, step):
+def multi_otsu(image, number_of_thresholds, step):
     """
     Performing image segmentation based on otsu algorithm
 
