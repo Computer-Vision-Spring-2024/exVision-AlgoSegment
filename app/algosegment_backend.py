@@ -221,7 +221,7 @@ class BackendClass(QMainWindow, Ui_MainWindow):
                         False,
                     )
                 self.ui.apply_mean_shift.setEnabled(True)
-            elif current_tab == 4:
+            elif current_tab >= 4:
                 self.thresholding_grey_input = convert_to_gray(img)
                 self.ui.number_of_thresholds_slider.setEnabled(True)
                 self.display_image(
@@ -542,7 +542,9 @@ class BackendClass(QMainWindow, Ui_MainWindow):
 
     def apply_agglomerative_clustering(self):
         if self.downsampling:
-            agglo_downsampled_image = downsample_image()
+            agglo_downsampled_image = downsample_image(
+                self.agglo_input_image, self.agglo_scale_factor
+            )
         else:
             agglo_downsampled_image = self.agglo_input_image
         self.get_agglomerative_parameters()

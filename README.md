@@ -75,7 +75,7 @@
 > We did not implement the agglomerative clustering algorithm ourselves. Instead, we used the implementation provided in the following repository: [Image-Clustering by Alianoroozi](https://github.com/alianoroozi/Image-Clustering).  
 > Our contribution was adding an optional and initial downsampling step before the algorithm begins, to enhance performance in certain use cases.
 
-**For a more in-depth understanding of each algorithm, please refer to the attached notebooks as well as the report.**
+**For a more in-depth understanding of each algorithm, please refer to the attached notebooks as well as [the project documentation]("README-Assets/AlgoSegment_documentation.pdf").**
 
 ## Getting Started
 
