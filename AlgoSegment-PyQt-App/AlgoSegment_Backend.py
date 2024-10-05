@@ -12,15 +12,14 @@ import numpy as np
 
 # in CMD: pip install qdarkstyle -> pip install pyqtdarktheme
 import qdarktheme
+from AlgoSegment_UI import AlgoSegment_Ui
+from implementation.clustering_algo import *
+from implementation.thresholding_algo import *
 from PyQt5 import QtGui
-from PyQt5.QtWidgets import QApplication, QFileDialog, QMainWindow, QMessageBox
-
-from algosegment_ui import AlgoSegment_Ui
-from clustering_algo import *
-from thresholding_algo import *
-from clustering_utils import *
-from helper_functions import *
-from thresholding_utils import *
+from PyQt5.QtWidgets import QApplication, QFileDialog, QMainWindow
+from utils.clustering_utils import *
+from utils.helper_functions import *
+from utils.thresholding_utils import *
 
 
 class BackendClass(QMainWindow, AlgoSegment_Ui):

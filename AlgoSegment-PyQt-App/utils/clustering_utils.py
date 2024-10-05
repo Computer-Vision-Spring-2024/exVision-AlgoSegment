@@ -49,7 +49,9 @@ def anti_aliasing_resize(img):
 
 
 def gaussian_weight(distance, sigma):
-    """Introduce guassian weighting based on the distance from the mean"""
+    """
+    Introduce guassian weighting based on the distance from the mean
+    """
     return np.exp(-(distance**2) / (2 * sigma**2))
 
 

@@ -1,6 +1,6 @@
 from itertools import combinations
 
-from thresholding_utils import *
+from utils.thresholding_utils import *
 
 
 def optimal_thresholding(image):

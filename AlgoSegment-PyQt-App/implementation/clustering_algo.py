@@ -1,4 +1,4 @@
-from clustering_utils import *
+from utils.clustering_utils import *
 
 
 def apply_region_growing(
@@ -129,10 +129,24 @@ def kmeans_segmentation(
             ]  # subimage for redistribute the centriods
 
             if spatial_segmentation:
-                centroids_color, centroids_spatial, _ = kmeans_segmentation(subimage, n_clusters, max_iterations//2, spatial_segmentation, spatial_segmentation_weight,centroids_color=centroids_color, 
-                                    centroids_spatial=centroids_spatial)
+                centroids_color, centroids_spatial, _ = kmeans_segmentation(
+                    subimage,
+                    n_clusters,
+                    max_iterations // 2,
+                    spatial_segmentation,
+                    spatial_segmentation_weight,
+                    centroids_color=centroids_color,
+                    centroids_spatial=centroids_spatial,
+                )
             else:
-                centroids_color, _ = kmeans_segmentation(subimage, n_clusters, max_iterations//2, spatial_segmentation, spatial_segmentation_weight, centroids_color=centroids_color)
+                centroids_color, _ = kmeans_segmentation(
+                    subimage,
+                    n_clusters,
+                    max_iterations // 2,
+                    spatial_segmentation,
+                    spatial_segmentation_weight,
+                    centroids_color=centroids_color,
+                )
 
     for _ in range(max_iterations):
         for centroid_idx in range(centroids_color.shape[0]):
@@ -300,10 +314,9 @@ def fit_agglomerative_clusters(
         for point in cluster:
             cluster_out[tuple(point)] = cluster_number
 
-
     print("Computing cluster centers ...")
     centers = {}
     for cluster_number, cluster in enumerate(clusters_list):
         centers[cluster_number] = np.average(cluster, axis=0)
 
-    return cluster_out ,centers
+    return cluster_out, centers
